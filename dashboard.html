@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Dashboard | Stackly Real Estate</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;700&display=swap');
+:root{--bg:#0f1330;--bg2:#1b2256;--ac:#ff8a5b;--ac2:#5b6cff;--tx:#f3f4fb;--mut:#a7aed0;--card:rgba(255,255,255,.06);--bd:rgba(255,255,255,.12);--r:16px;--teal:#22c3a6}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;overflow-x:hidden}
+img{max-width:100%;display:block}a{color:inherit;text-decoration:none}ul{list-style:none}
+h1,h2,h3,h4{font-family:'Fraunces',serif;line-height:1.15;font-weight:700}
+h1{font-size:clamp(1.7rem,3.4vw,2.5rem)}h3{font-size:1.2rem;margin-bottom:12px}h4{font-size:1.05rem}
+p{color:var(--mut)}small{color:var(--mut)}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(circle at 20% 10%,var(--bg2),var(--bg))}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.4}
+.b1{width:46vw;height:46vw;background:var(--ac2);top:-12%;left:-10%}
+.b2{width:38vw;height:38vw;background:var(--ac);bottom:-10%;right:-8%;opacity:.25}
+.b3{width:30vw;height:30vw;background:var(--teal);top:40%;left:45%;opacity:.2}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:70px 70px;opacity:.3;mask-image:radial-gradient(circle,#000 20%,transparent 75%)}
+.dash{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:22px 16px;background:rgba(15,19,48,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid var(--bd);z-index:50;overflow-y:auto}
+.slogo img{height:38px;width:auto;margin:0 8px 18px}
+.suser{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--bd);margin-bottom:18px}
+.av{width:42px;height:42px;border-radius:50%;background:var(--ac);color:#241006;display:grid;place-items:center;font-weight:700;font-family:'Fraunces',serif;flex-shrink:0}
+.sname{font-weight:700;line-height:1.2}.semail{font-size:.8rem;color:var(--mut);word-break:break-all}
+.sinfo{min-width:0}
+nav a{display:flex;gap:12px;align-items:center;padding:11px 14px;border-radius:12px;color:var(--mut);font-weight:500;margin-bottom:4px;transition:background .25s,color .25s}
+nav a:hover,nav a.active{background:rgba(255,138,91,.16);color:var(--ac)}
+nav .ic{width:20px;text-align:center}
+.sfoot{margin-top:auto;padding-top:16px}
+.logoutbtn{width:100%;padding:11px;border-radius:50px;border:1px solid var(--bd);background:transparent;color:var(--tx);font-family:inherit;font-weight:700;cursor:pointer;transition:border-color .25s,color .25s}
+.logoutbtn:hover{border-color:var(--ac);color:var(--ac)}
+.sidebar-close,.menu-btn,.backdrop{display:none}
+.main{padding:22px 32px 48px;min-width:0}
+.topbar{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.search{flex:1;max-width:460px}
+.search input{width:100%;padding:11px 18px;border-radius:50px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-family:inherit;font-size:.98rem}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.bell{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--bd);background:var(--card);display:grid;place-items:center}
+.bell .dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--ac)}
+.profile-chip{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border-radius:50px;border:1px solid var(--bd);background:var(--card)}
+.profile-chip .av{width:34px;height:34px;font-size:.9rem}
+.pname{font-weight:700;font-size:.9rem;line-height:1.2}.pemail{font-size:.75rem;color:var(--mut)}
+.pagehead{margin-bottom:22px}.pagehead p{margin-top:6px}
+.tabpanel{display:none}.tabpanel.on{display:block}
+.stat-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}
+.stat-card,.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px;transition:border-color .3s}
+.stat-card:hover,.panel:hover{border-color:rgba(255,138,91,.5)}
+.ic2{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#10132b;font-weight:700;margin-bottom:12px}
+.num{font-family:'Fraunces',serif;font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:700;line-height:1.2}
+.lbl{color:var(--mut);font-size:.92rem}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;margin-bottom:20px}
+.panel{margin-bottom:20px}.dgrid .panel{margin-bottom:0}
+.tw{overflow-x:auto}table{width:100%;min-width:480px;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--bd);font-size:.94rem;vertical-align:top}th{color:var(--mut);font-weight:500}
+.status{display:inline-block;padding:3px 12px;border-radius:50px;font-size:.82rem;font-weight:700;background:rgba(255,138,91,.15);color:var(--ac)}
+.status.ok{background:rgba(34,195,166,.15);color:var(--teal)}.status.no{background:rgba(255,90,90,.15);color:#ff9d9d}
+.profile-panel{display:flex;flex-direction:column;align-items:center;gap:14px}
+.bigav{width:76px;height:76px;border-radius:50%;background:var(--ac);color:#241006;display:grid;place-items:center;font:700 1.8rem 'Fraunces',serif}
+.pfield,.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--bd);font-size:.94rem}
+.pfield span:first-child,.kv span{color:var(--mut)}.pfield span:last-child,.kv b{text-align:right;word-break:break-all}
+.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.prop{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:border-color .3s,transform .3s}
+.prop:hover{border-color:var(--ac);transform:translateY(-3px)}
+.prop .iw{aspect-ratio:16/10;background:var(--bg2)}.prop img{width:100%;height:100%;object-fit:cover}
+.prop .pb{padding:16px}.prop h4{margin-bottom:4px}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
+.price{color:var(--ac);font-weight:700;font-size:1.1rem}
+.heart{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1.05rem;flex-shrink:0}
+.heart.on{background:var(--ac);color:#241006}
+.btn{display:inline-block;padding:12px 26px;border-radius:50px;background:var(--ac);color:#241006;font-weight:700;border:0;cursor:pointer;font-family:inherit;font-size:1rem;text-align:center;transition:box-shadow .3s}
+.btn:hover{box-shadow:0 10px 30px rgba(255,138,91,.4)}
+.form{display:grid;gap:12px}
+.form input,.form textarea,.form select,.sel{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-family:inherit;font-size:1rem}
+.sel{width:auto;padding:5px 8px;border-radius:8px;font-size:.9rem}
+.form select option,.sel option{color:#000}
+.form textarea{min-height:90px;resize:vertical}
+.form input[type=range]{padding:0;border:0;accent-color:var(--ac);background:none}
+.form label{display:grid;gap:6px;font-weight:500}.form label b{color:var(--ac)}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.row3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.msg{padding:11px 15px;border-radius:12px;background:rgba(255,138,91,.15);color:var(--ac);display:none}
+.del{background:none;border:1px solid var(--bd);color:#ff9d9d;border-radius:8px;padding:4px 12px;cursor:pointer;font-family:inherit}
+.bar{display:grid;grid-template-columns:110px 1fr 30px;gap:10px;align-items:center;margin:8px 0}.bar i{display:block;height:10px;border-radius:6px;background:var(--ac)}.bar b{text-align:right}
+.empty{color:var(--mut);padding:8px 0}
+@media(max-width:1100px){.stat-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.dgrid{grid-template-columns:minmax(0,1fr)}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.dash{grid-template-columns:minmax(0,1fr)}.sidebar{position:fixed;top:0;left:0;bottom:0;width:min(82vw,300px);transform:translateX(-105%);transition:transform .4s}.sidebar.open{transform:none}.sidebar-close{display:block;position:absolute;top:14px;right:14px;background:none;border:1px solid var(--bd);border-radius:10px;width:36px;height:36px;color:var(--tx);cursor:pointer}.menu-btn{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:1.3rem;cursor:pointer;flex-shrink:0}.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40}.backdrop.on{display:block}.main{padding:16px 18px 40px}.pinfo{display:none}.profile-chip{padding:5px}}
+@media(max-width:640px){.g2,.g3,.row,.row3{grid-template-columns:minmax(0,1fr)}.bell{display:none}.bar{grid-template-columns:80px 1fr 24px}}
+@media(max-width:480px){.stat-cards{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style><style id="cdd-css">
+.cdd{position:relative;display:block;width:100%;min-width:0;flex:1}
+.cdd>select{position:absolute!important;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0!important}
+.cdd-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;font:inherit;color:inherit;background:transparent;border:0;padding:inherit;border-radius:inherit}
+.cdd-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdd-btn svg{flex:none;width:14px;height:14px;transition:transform .2s}
+.cdd.open .cdd-btn svg{transform:rotate(180deg)}
+.cdd-menu{position:fixed;z-index:99999;margin:0;padding:6px;list-style:none;background:#1b2256;color:#f3f4fb;border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.45);overflow-y:auto;overscroll-behavior:contain;max-width:calc(100vw - 16px);font-family:inherit;font-size:1rem}
+.cdd-menu li{padding:11px 14px;border-radius:10px;cursor:pointer}
+.cdd-menu li:hover,.cdd-menu li.sel{background:rgba(255,138,91,.18)}
+.cdd-menu li.sel{color:#ff8a5b;font-weight:600}
+</style><style id="logo70">.logo img,.slogo img,.form-logo img,.auth-visual .logo img,.fb .logo img{height:70px!important;width:auto}@media(max-width:480px){.logo img{height:70px!important}.nav{padding-top:6px;padding-bottom:6px}}</style></head><body data-page="dashboard"><div class="bg"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><div class="grid-bg"></div></div>
+<div class="dash"><aside class="sidebar" id="sb"><button class="sidebar-close" id="sc" aria-label="Close menu">✕</button><a href="index.html" class="slogo"><img src="./stackly.png" alt="Stackly"></a><div class="suser"><div class="av" data-av>U</div><div class="sinfo"><div class="sname" data-name>Home buyer</div><div class="semail" data-email>—</div></div></div><nav id="sidenav"><a href="#" data-tab="overview"><span class="ic">■</span> Overview</a><a href="#" data-tab="saved"><span class="ic">♥</span> Saved homes</a><a href="#" data-tab="visits"><span class="ic">▤</span> Site visits</a><a href="#" data-tab="enquiries"><span class="ic">✉</span> My enquiries</a><a href="#" data-tab="emi"><span class="ic">₹</span> EMI planner</a><a href="#" data-tab="profile"><span class="ic">✎</span> My profile</a><a href="index.html"><span class="ic">←</span> Back to site</a></nav><div class="sfoot"><button class="logoutbtn" id="out">Log out</button></div></aside><div class="backdrop" id="bd"></div>
+<main class="main"><div class="topbar"><button class="menu-btn" id="mb" aria-label="Open menu">☰</button><div class="search"><input type="search" id="q" placeholder="Search homes, visits, enquiries..." aria-label="Search"></div><div class="topbar-right"><div class="bell">🔔<span class="dot"></span></div><div class="profile-chip"><div class="av" data-av>U</div><div class="pinfo"><div class="pname" data-name>Home buyer</div><div class="pemail" data-email>—</div></div></div></div></div><div class="pagehead"><h1 id="pt"></h1><p id="ps"></p></div>
+<section class="tabpanel" id="tab-overview"><div class="stat-cards"><div class="stat-card"><div class="ic2" style="background:var(--ac)">♥</div><div class="num" id="nSaved">0</div><div class="lbl">Saved homes</div></div><div class="stat-card"><div class="ic2" style="background:var(--ac2)">▤</div><div class="num" id="nVis">0</div><div class="lbl">Site visits</div></div><div class="stat-card"><div class="ic2" style="background:var(--teal)">✉</div><div class="num" id="nInq">0</div><div class="lbl">Enquiries sent</div></div><div class="stat-card"><div class="ic2" style="background:#ffd166">◷</div><div class="num" id="nextV" style="font-size:1.25rem">None booked</div><div class="lbl">Next visit</div></div></div>
+<div class="dgrid"><div class="panel"><h3>Upcoming visits</h3><div class="tw"><table><thead><tr><th>Property</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody id="ovVis"></tbody></table></div></div><div class="panel"><h3>Your account</h3><div class="profile-panel"><div class="bigav" data-av>U</div><div style="width:100%"><div class="pfield"><span>Name</span><span data-name></span></div><div class="pfield"><span>Email</span><span data-email></span></div><div class="pfield"><span>Account type</span><span>Home buyer</span></div><div class="pfield"><span>Preferred city</span><span id="ovCity">—</span></div><div class="pfield"><span>Budget</span><span id="ovBud">—</span></div></div></div></div></div>
+<div class="panel"><h3>Recommended for you</h3><div class="grid g3" id="recList"></div></div></section>
+<section class="tabpanel" id="tab-saved"><div class="panel"><h3>Saved homes</h3><div class="grid g3" id="savedList"></div></div></section>
+<section class="tabpanel" id="tab-visits"><div class="panel"><h3>Book a site visit</h3><form class="form" id="fVisit" style="max-width:620px"><label>Property<select id="vProp" name="vp" required></select></label><div class="row"><label>Date<input type="date" name="vd" required></label><label>Time<select name="vt"><option>10:00 AM</option><option>12:00 PM</option><option>03:00 PM</option><option>05:00 PM</option></select></label></div><label>Note (optional)<textarea name="vn" placeholder="Anything the agent should know"></textarea></label><button class="btn">Request visit</button><div class="msg"></div></form></div><div class="panel"><h3>Your visits</h3><div class="tw"><table><thead><tr><th>Property</th><th>Date</th><th>Time</th><th>Status</th><th></th></tr></thead><tbody id="visList"></tbody></table></div></div></section>
+<section class="tabpanel" id="tab-enquiries"><div class="panel"><h3>My enquiries</h3><div class="tw"><table><thead><tr><th>Date</th><th>Topic</th><th>Message</th></tr></thead><tbody id="inqList"></tbody></table></div></div></section>
+<section class="tabpanel" id="tab-emi"><div class="dgrid"><div class="panel"><h3>Estimate your EMI</h3><form class="form" id="emi" onsubmit="return false"><label>Loan amount <b id="eA"></b><input type="range" id="amt" min="1000000" max="50000000" step="100000" value="8000000"></label><label>Interest rate <b id="eR"></b><input type="range" id="rate" min="6" max="14" step="0.1" value="8.5"></label><label>Tenure <b id="eY"></b><input type="range" id="yrs" min="5" max="30" step="1" value="20"></label></form></div><div class="panel"><h3>Monthly EMI</h3><div class="num" id="eo" style="color:var(--ac)">0</div><div class="kv" style="margin-top:12px"><span>Total interest</span><b id="et">0</b></div><p style="margin-top:12px">Tip: keep your EMI under 40% of monthly income.</p></div></div></section>
+<section class="tabpanel" id="tab-profile"><div class="panel"><h3>Your profile</h3><form class="form" id="fProf" style="max-width:480px"><label>Name<input name="pname" required></label><label>Email (cannot be changed)<input data-email readonly></label><label>Phone<input name="pphone" type="tel" placeholder="+91"></label><label>Preferred city<input name="pcity" placeholder="e.g. Salem"></label><label>Budget (₹)<input name="pbud" type="number" min="0" placeholder="e.g. 10000000"></label><button class="btn">Save profile</button><div class="msg"></div></form></div></section></main></div><script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script><script>
+(()=>{
+const get=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}};
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const norm=e=>String(e||'').trim().toLowerCase();
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=i=>document.getElementById(i);
+const IMG={h1:'photo-1560518883-ce09059eeffa',h2:'photo-1564013799919-ab600027ffc6',h3:'photo-1600585154340-be6161a56a0c',h4:'photo-1512917774080-9991f1c4c750',h5:'photo-1600596542815-ffad4c1539a9',h6:'photo-1613490493576-7fde63acd811',h7:'photo-1486406146926-c627a92ad1ab',h8:'photo-1582407947304-fd86f028f716',h9:'photo-1600607687939-ce8a6c25118c',h10:'photo-1545324418-cc1a3fa10c00'};
+const img=(k,w)=>`https://images.unsplash.com/${IMG[k]||IMG.h1}?auto=format&fit=crop&q=80&w=${w}`;
+if(!get('sk_users'))set('sk_users',[{name:'Admin',email:'admin@stackly.com',pass:'admin123',role:'admin'}]);
+const DEF=[{id:1,t:'Skyline Penthouse',c:'Chennai',p:18500000,b:4,ba:4,s:3200,k:'h7'},{id:2,t:'Palm Grove Villa',c:'Coimbatore',p:24000000,b:5,ba:5,s:4800,k:'h4'},{id:3,t:'Lakeview Residence',c:'Salem',p:9800000,b:3,ba:3,s:2100,k:'h2'},{id:4,t:'Heritage Courtyard Home',c:'Madurai',p:12600000,b:4,ba:3,s:2900,k:'h1'},{id:5,t:'Modern Glass House',c:'Bengaluru',p:31000000,b:5,ba:6,s:5400,k:'h3'},{id:6,t:'Garden Terrace Duplex',c:'Hyderabad',p:15200000,b:3,ba:4,s:2600,k:'h6'}];
+const props=()=>get('sk_props',DEF);
+const inr=n=>'₹'+(n>=1e7?(n/1e7).toFixed(2).replace(/\.?0+$/,'')+' Cr':(n/1e5).toFixed(1).replace(/\.0$/,'')+' L');
+const S=()=>get('sk_session',null);
+const page=document.body.dataset.page;
+const show=(el,t)=>{if(!el)return;el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',3500)};
+const stc=t=>/confirm|complete/i.test(t)?'ok':/cancel/i.test(t)?'no':'';
+const today=new Date().toISOString().slice(0,10);
+const s=S();
+if(!s){location='login.html';return}
+if(page==='admin'&&s.role!=='admin'){location='dashboard.html';return}
+if(page==='dashboard'&&s.role==='admin'){location='admin.html';return}
+const acct=get('sk_users',[]).find(x=>norm(x.email)===norm(s.email));
+if(!acct){localStorage.removeItem('sk_session');location='login.html';return}
+const fill=()=>{document.querySelectorAll('[data-email]').forEach(el=>el.tagName==='INPUT'?el.value=acct.email:el.textContent=acct.email);document.querySelectorAll('[data-name]').forEach(el=>el.textContent=acct.name);document.querySelectorAll('[data-av]').forEach(el=>el.textContent=(acct.name||'U').trim()[0].toUpperCase())};fill();
+const hasG=window.gsap,rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const sb=$('sb'),bd=$('bd'),tog=o=>{sb.classList.toggle('open',o);bd.classList.toggle('on',o)};
+$('mb').onclick=()=>tog(true);$('sc').onclick=()=>tog(false);bd.onclick=()=>tog(false);
+$('out').onclick=()=>{localStorage.removeItem('sk_session');location='login.html'};
+const links=document.querySelectorAll('#sidenav a[data-tab]'),pans=document.querySelectorAll('.tabpanel');
+const open=t=>{links.forEach(l=>l.classList.toggle('active',l.dataset.tab===t));pans.forEach(p=>{const on=p.id==='tab-'+t;p.classList.toggle('on',on);if(on&&hasG&&!rm)gsap.from(p.children,{y:24,opacity:0,stagger:.07,duration:.5,clearProps:'all'})});const m=TITLES[t];$('pt').textContent=m[0].replace('%n',acct.name.split(' ')[0]);$('ps').textContent=m[1];$('q').value='';filter('');tog(false);history.replaceState(null,'','#'+t)};
+links.forEach(l=>l.onclick=e=>{e.preventDefault();open(l.dataset.tab)});
+const filter=v=>{v=norm(v);document.querySelectorAll('.tabpanel.on tbody tr,.tabpanel.on .prop').forEach(r=>r.style.display=!v||norm(r.textContent).includes(v)?'':'none')};
+$('q').oninput=e=>filter(e.target.value);
+
+const TITLES={overview:['Welcome back, %n','Here is what is happening with your home search.'],saved:['Saved homes','Homes you have hearted across our listings.'],visits:['Site visits','Book a walkthrough and track its status.'],enquiries:['My enquiries','Messages you have sent to our agents.'],emi:['EMI planner','Estimate your monthly payment before you shortlist.'],profile:['My profile','Keep your details and preferences up to date.']};
+const cardHTML=(p,sv)=>`<article class="prop"><div class="iw"><img src="${img(p.k,700)}" alt="${esc(p.t)} in ${esc(p.c)}" loading="lazy"></div><div class="pb"><h4>${esc(p.t)}</h4><p>${esc(p.c)} · ${p.b} bed · ${p.ba} bath · ${p.s} sq ft</p><div class="meta"><span class="price">${inr(p.p)}</span><button class="heart ${sv.includes(p.id)?'on':''}" data-id="${p.id}" aria-label="Save property">♥</button></div></div></article>`;
+const svd=()=>get('sk_saved_'+acct.email,[]);
+const render=()=>{
+const ids=svd(),all=props(),pr=all.filter(p=>ids.includes(p.id)),cur=get('sk_users',[]).find(x=>norm(x.email)===acct.email)||acct,cc=norm(cur.city);
+$('savedList').innerHTML=pr.length?pr.map(p=>cardHTML(p,ids)).join(''):'<p class="empty">No saved homes yet. Tap the heart on any listing to save it here.</p>';
+$('nSaved').textContent=pr.length;
+const rec=all.filter(p=>!ids.includes(p.id)).sort((a,b)=>(norm(b.c)===cc)-(norm(a.c)===cc)||(cur.budget?Math.abs(a.p-cur.budget)-Math.abs(b.p-cur.budget):0)).slice(0,3);
+$('recList').innerHTML=rec.length?rec.map(p=>cardHTML(p,ids)).join(''):'<p class="empty">You have saved every listing.</p>';
+const my=get('sk_msgs',[]).filter(m=>norm(m.email)===acct.email);$('nInq').textContent=my.length;
+$('inqList').innerHTML=my.length?my.map(m=>`<tr><td>${esc(m.date)}</td><td>${esc(m.subject)}</td><td>${esc(m.text)}</td></tr>`).join(''):'<tr><td colspan="3">No enquiries yet.</td></tr>';
+const vs=get('sk_visits',[]).filter(v=>norm(v.email)===acct.email);$('nVis').textContent=vs.length;
+const row=v=>`<tr><td>${esc(v.prop)}</td><td>${esc(v.date)}</td><td>${esc(v.time)}</td><td><span class="status ${stc(v.status)}">${esc(v.status)}</span></td>`;
+const live=vs.filter(v=>v.date>=today&&!/cancel|complete/i.test(v.status)).sort((a,b)=>a.date.localeCompare(b.date));
+$('nextV').textContent=live[0]?`${live[0].date} · ${live[0].time}`:'None booked';
+$('ovVis').innerHTML=live.length?live.slice(0,3).map(v=>row(v)+'</tr>').join(''):'<tr><td colspan="4">No upcoming visits. Book one from Site visits.</td></tr>';
+$('visList').innerHTML=vs.length?vs.map(v=>row(v)+`<td>${v.status==='Pending'?`<button class="del" data-c="${v.id}">Cancel</button>`:''}</td></tr>`).join(''):'<tr><td colspan="5">No visits booked yet.</td></tr>';
+$('ovCity').textContent=cur.city||'—';$('ovBud').textContent=cur.budget?inr(cur.budget):'—'};
+$('vProp').innerHTML=props().map(p=>`<option>${esc(p.t)} — ${esc(p.c)}</option>`).join('');
+const fV=$('fVisit');fV.vd.min=today;
+fV.onsubmit=e=>{e.preventDefault();const a=get('sk_visits',[]);a.push({id:Date.now(),name:acct.name,email:acct.email,prop:fV.vp.value,date:fV.vd.value,time:fV.vt.value,note:fV.vn.value.trim(),status:'Pending'});set('sk_visits',a);fV.reset();fV.vd.min=today;show(fV.querySelector('.msg'),'Visit requested. An agent will confirm shortly.');render()};
+$('visList').onclick=e=>{const c=e.target.dataset.c;if(!c)return;set('sk_visits',get('sk_visits',[]).map(v=>v.id===+c?{...v,status:'Cancelled'}:v));render()};
+document.addEventListener('click',e=>{const h=e.target.closest('.heart');if(!h)return;const id=+h.dataset.id;let a=svd();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];set('sk_saved_'+acct.email,a);render()});
+const fP=$('fProf');fP.pname.value=acct.name;fP.pphone.value=acct.phone||'';fP.pcity.value=acct.city||'';fP.pbud.value=acct.budget||'';
+fP.onsubmit=e=>{e.preventDefault();const us=get('sk_users',[]),i=us.findIndex(x=>norm(x.email)===acct.email);Object.assign(us[i],{name:fP.pname.value.trim(),phone:fP.pphone.value.trim(),city:fP.pcity.value.trim(),budget:+fP.pbud.value||0});set('sk_users',us);set('sk_session',{...s,name:us[i].name});Object.assign(acct,us[i]);fill();show(fP.querySelector('.msg'),'Profile saved.');render()};
+const em=$('emi'),f=()=>{const P=+$('amt').value,R=+$('rate').value,Y=+$('yrs').value,r=R/1200,n=Y*12,m=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);$('eA').textContent=inr(P);$('eR').textContent=R+'%';$('eY').textContent=Y+' years';$('eo').textContent='₹'+Math.round(m).toLocaleString('en-IN');$('et').textContent=inr(m*n-P)};em.oninput=f;f();
+render();
+const first=location.hash.slice(1);open(TITLES[first]?first:Object.keys(TITLES)[0]);
+if(hasG&&!rm)gsap.from('.stat-card',{y:30,opacity:0,stagger:.1,duration:.7,ease:'power3.out',clearProps:'all'});
+})();</script><script id="cdd-js">
+(function(){
+var ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+var menu=null,cur=null;
+function close(){if(menu){menu.remove();menu=null}if(cur){cur.wrap.classList.remove('open');cur=null}}
+function label(s){var o=s.options[s.selectedIndex];return o?o.text:''}
+function place(btn){
+ var r=btn.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,m=8;
+ var w=Math.min(Math.max(r.width,160),vw-2*m);
+ var left=Math.min(Math.max(r.left,m),vw-w-m);
+ menu.style.width=w+'px';menu.style.left=left+'px';menu.style.maxHeight='none';
+ var h=Math.min(menu.scrollHeight+2,vh-2*m);
+ var below=vh-r.bottom-m,above=r.top-m,top;
+ if(h<=below||below>=above){top=r.bottom+6;h=Math.min(h,below-6)}else{h=Math.min(h,above-6);top=r.top-6-h}
+ menu.style.top=Math.max(m,top)+'px';menu.style.maxHeight=Math.max(h,100)+'px';
+}
+function open(s,wrap,btn){
+ close();cur={s:s,wrap:wrap};wrap.classList.add('open');
+ menu=document.createElement('ul');menu.className='cdd-menu';menu.setAttribute('role','listbox');
+ Array.prototype.forEach.call(s.options,function(o,i){
+  var li=document.createElement('li');li.textContent=o.text;li.setAttribute('role','option');
+  if(i===s.selectedIndex)li.className='sel';
+  li.addEventListener('click',function(e){e.stopPropagation();s.selectedIndex=i;btn.firstChild.textContent=o.text;
+   s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}));close()});
+  menu.appendChild(li)});
+ document.body.appendChild(menu);place(btn);
+ var sel=menu.querySelector('.sel');if(sel)sel.scrollIntoView({block:'nearest'});
+}
+function enhance(s){
+ if(s.dataset.cdd||s.multiple||s.size>1)return;s.dataset.cdd='1';
+ var wrap=document.createElement('div');wrap.className='cdd';
+ var cs=getComputedStyle(s);
+ s.parentNode.insertBefore(wrap,s);wrap.appendChild(s);
+ s.tabIndex=-1;
+ var btn=document.createElement('button');btn.type='button';btn.className='cdd-btn';
+ btn.setAttribute('aria-haspopup','listbox');
+ btn.innerHTML='<span>'+label(s).replace(/</g,'&lt;')+'</span>'+ARROW;
+ wrap.insertBefore(btn,s);
+ wrap.style.cssText+=';';
+ btn.style.padding=cs.padding;btn.style.fontSize=cs.fontSize;btn.style.minHeight=cs.height;
+ if(cs.backgroundColor&&cs.backgroundColor!=='rgba(0, 0, 0, 0)'){wrap.style.background=cs.backgroundColor}
+ if(cs.borderTopWidth!=='0px'){wrap.style.border=cs.borderTopWidth+' solid '+cs.borderTopColor}
+ wrap.style.borderRadius=cs.borderRadius;
+ s.style.backgroundImage='none';
+ btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();(cur&&cur.s===s)?close():open(s,wrap,btn)});
+ s.addEventListener('change',function(){btn.firstChild.textContent=label(s)});
+}
+function scan(root){(root||document).querySelectorAll('select').forEach(enhance)}
+document.addEventListener('click',close);
+window.addEventListener('resize',close);
+window.addEventListener('scroll',function(e){if(menu&&!menu.contains(e.target))close()},true);
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+function init(){scan();new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.tagName==='SELECT')enhance(n);else if(n.querySelectorAll)scan(n)}})})}).observe(document.body,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script></body></html>

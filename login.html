@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in | Stackly Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  :root{
+    --ink:#0D1B2A;--ink-soft:#16273D;--ivory:#F6F3EC;--paper:#EFEAE0;
+    --brass:#A9823E;--brass-light:#C9A968;--slate:#445069;
+    --line:rgba(13,27,42,0.13);--line-light:rgba(246,243,236,0.18);--white:#FFFFFF;--error:#B3432E;
+    --font-display:'Fraunces', serif;--font-body:'Manrope', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font-body);background:var(--ivory);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  img{max-width:100%;display:block;}
+  a{text-decoration:none;color:inherit;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:500;letter-spacing:-0.01em;}
+
+  .auth-wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+
+  /* ---------- Left visual panel (unchanged) ---------- */
+  .auth-visual{background:var(--ink);color:var(--ivory);position:relative;overflow:hidden;padding:60px;display:flex;flex-direction:column;justify-content:space-between;}
+  .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.5;}
+  .blob-a{width:520px;height:520px;background:radial-gradient(circle,#A9823E 0%,rgba(169,130,62,0) 70%);top:-160px;right:-140px;}
+  .blob-b{width:420px;height:420px;background:radial-gradient(circle,#445069 0%,rgba(68,80,105,0) 70%);bottom:-160px;left:-100px;}
+  .auth-visual .logo img{height:70px;filter:brightness(0) invert(1);position:relative;z-index:2;}
+  .auth-visual .quote{position:relative;z-index:2;max-width:440px;}
+  .auth-visual .quote p{font-family:var(--font-display);font-size:clamp(22px,2.4vw,30px);line-height:1.4;margin-bottom:24px;}
+  .auth-visual .quote .author{font-size:13.5px;color:rgba(246,243,236,0.6);}
+  .auth-visual .stats{position:relative;z-index:2;display:flex;gap:40px;}
+  .auth-visual .stats .num{font-family:var(--font-display);font-size:28px;color:var(--brass-light);}
+  .auth-visual .stats .lbl{font-size:12.5px;color:rgba(246,243,236,0.6);margin-top:4px;}
+
+  /* ---------- Right panel — rounded / pill style ---------- */
+  .auth-form-side{display:flex;align-items:center;justify-content:center;padding:60px 40px;background:var(--ivory);}
+  .auth-box{width:100%;max-width:400px;}
+
+  .form-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px;}
+  .form-logo img{height:70px;}
+  .form-logo span{font-family:var(--font-display);font-size:19px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
+
+  .back-link{font-size:13px;color:var(--slate);margin-bottom:22px;display:inline-flex;align-items:center;gap:6px;}
+  .back-link:hover{color:var(--ink);}
+
+  /* pill tab switcher */
+  .tabs{position:relative;display:flex;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:5px;margin-bottom:30px;}
+  .tabs .tab-highlight{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);background:var(--ink);border-radius:999px;transition:transform .3s cubic-bezier(.65,0,.35,1);z-index:1;}
+  .tab{position:relative;z-index:2;flex:1;text-align:center;padding:12px 0;font-size:14px;font-weight:600;color:var(--slate);cursor:pointer;border-radius:999px;transition:color .3s ease;}
+  .tab.active{color:var(--ivory);}
+  .tabs.on-signup .tab-highlight{transform:translateX(100%);}
+
+  .auth-box h1{font-size:30px;margin-bottom:8px;}
+  .auth-box .sub{color:var(--slate);font-size:14.5px;margin-bottom:30px;}
+
+  /* rounded role toggle */
+  .role-toggle{display:flex;gap:0;margin-bottom:24px;background:rgba(169,130,62,0.1);border-radius:999px;padding:5px;position:relative;}
+  .role-toggle .role-highlight{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);background:var(--white);border-radius:999px;box-shadow:0 2px 8px rgba(13,27,42,0.1);transition:transform .3s cubic-bezier(.65,0,.35,1);z-index:1;}
+  .role-opt{position:relative;z-index:2;flex:1;text-align:center;padding:11px 0;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--slate);transition:color .25s ease;}
+  .role-opt.active{color:var(--ink);}
+  .role-toggle.on-admin .role-highlight{transform:translateX(100%);}
+
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;}
+  .field .input-wrap{position:relative;}
+  .field input,.field select{width:100%;padding:14px 18px;border:1px solid var(--line);background:var(--white);font-family:var(--font-body);font-size:14.5px;color:var(--ink);border-radius:999px;transition:.25s;}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(169,130,62,0.12);}
+  .field input[type="password"],.field input[data-pw]{padding-right:46px;}
+  .pw-toggle{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--slate);display:flex;align-items:center;padding:4px;}
+  .pw-toggle svg{width:18px;height:18px;}
+  .pw-toggle:hover{color:var(--ink);}
+  .field .err{color:var(--error);font-size:12.5px;margin-top:6px;padding-left:6px;display:none;}
+  .field.invalid input,.field.invalid select{border-color:var(--error);}
+  .field.invalid .err{display:block;}
+
+  .form-meta{display:flex;justify-content:space-between;align-items:center;margin:-6px 0 24px;font-size:13px;}
+  .form-meta label{display:flex;align-items:center;gap:8px;color:var(--slate);cursor:pointer;}
+  .form-meta input[type="checkbox"]{width:16px;height:16px;accent-color:var(--brass);border-radius:4px;}
+  .form-meta a{color:var(--brass);font-weight:600;}
+  .form-meta a:hover{text-decoration:underline;}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;font-size:14.5px;font-weight:600;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:all .3s ease;width:100%;}
+  .btn-brass{background:var(--ink);color:var(--ivory);}
+  .btn-brass:hover{background:var(--ink-soft);}
+
+  .auth-error{background:rgba(179,67,46,0.08);border:1px solid rgba(179,67,46,0.3);color:var(--error);font-size:13px;padding:12px 18px;margin-bottom:20px;border-radius:14px;display:none;}
+  .auth-error.show{display:block;}
+
+  .divider{display:flex;align-items:center;gap:14px;margin:26px 0;font-size:12.5px;color:var(--slate);}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line);}
+
+  .social-row{display:flex;gap:12px;margin-bottom:26px;}
+  .social-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 0;border:1px solid var(--line);background:var(--white);border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;transition:.25s;}
+  .social-btn:hover{border-color:var(--brass);background:var(--paper);}
+  .social-btn svg{width:16px;height:16px;}
+
+  .hint{font-size:13px;color:var(--slate);text-align:center;}
+  .hint a{color:var(--brass);font-weight:600;}
+  .hint a:hover{text-decoration:underline;}
+
+  .bottom-link{margin-top:26px;text-align:center;}
+  .bottom-link a{font-size:13px;color:var(--slate);display:inline-flex;align-items:center;gap:6px;}
+  .bottom-link a:hover{color:var(--ink);}
+
+  .demo-note{margin-top:22px;padding:14px 16px;background:var(--paper);font-size:12.5px;color:var(--slate);border-radius:14px;border-left:2px solid var(--brass);}
+
+  /* ---------- Success / info modal ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(13,27,42,0.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s ease;padding:20px;}
+  .modal-overlay.show{opacity:1;pointer-events:auto;}
+  .modal-box{background:var(--white);border-radius:24px;padding:44px 40px 36px;max-width:400px;width:100%;text-align:center;transform:translateY(14px) scale(.97);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 30px 70px rgba(13,27,42,0.25);}
+  .modal-overlay.show .modal-box{transform:translateY(0) scale(1);}
+  .modal-icon{width:64px;height:64px;border-radius:50%;background:rgba(169,130,62,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+  .modal-icon svg{width:30px;height:30px;stroke:var(--brass);}
+  .modal-box h2{font-size:24px;margin-bottom:12px;}
+  .modal-box p{font-size:14.5px;color:var(--slate);line-height:1.55;margin-bottom:28px;}
+  .modal-btn{background:var(--ink);color:var(--ivory);border:none;padding:14px 26px;border-radius:999px;font-size:14.5px;font-weight:600;cursor:pointer;width:100%;transition:.25s;}
+  .modal-btn:hover{background:var(--ink-soft);}
+
+  [hidden]{display:none!important;}
+  .field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23a7aed0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;padding-right:44px;}
+  .modal-icon.err{background:rgba(179,67,46,0.1);}
+  .modal-icon.err svg{stroke:var(--error);}
+  .modal-icon svg{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .modal-field{text-align:left;margin:-8px 0 24px;}
+  .modal-field .field,.modal-field{margin-bottom:24px;}
+  .modal-actions{display:flex;gap:10px;}
+  .modal-actions .modal-btn{flex:1;width:auto;}
+  .modal-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .modal-btn.ghost:hover{background:var(--paper);}
+  .modal-bar{height:3px;border-radius:3px;background:var(--line);margin-top:20px;overflow:hidden;}
+  .modal-bar i{display:block;height:100%;width:0;background:var(--brass);}
+  .modal-btn:focus-visible,.btn:focus-visible,.social-btn:focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+
+  @media(max-width:900px){
+    .auth-wrap{grid-template-columns:1fr;}
+    .auth-visual{display:none;}
+  }
+
+  /* ---------- Stackly Real Estate theme (navy + coral, matches site) ---------- */
+  :root{--bg:#0f1330;--bg2:#1b2256;--ac:#ff8a5b;--ac2:#5b6cff;--tx:#f3f4fb;--mut:#a7aed0;--card:rgba(255,255,255,.06);--bd:rgba(255,255,255,.12);--onac:#241006;--bad:#ff9d9d;}
+  body{background:var(--bg);color:var(--tx);}
+  .auth-visual{background:radial-gradient(circle at 20% 10%,var(--bg2),var(--bg));color:var(--tx);}
+  .blob{opacity:.4;filter:blur(90px);}
+  .blob-a{background:radial-gradient(circle,var(--ac2) 0%,rgba(91,108,255,0) 70%);}
+  .blob-b{background:radial-gradient(circle,var(--ac) 0%,rgba(255,138,91,0) 70%);opacity:.28;}
+  .auth-visual .quote .author,.auth-visual .stats .lbl{color:var(--mut);}
+  .auth-visual .stats .num{color:var(--ac);}
+  .auth-form-side{background:var(--bg);}
+  .form-logo span,.auth-box h1{color:var(--tx);}
+  .auth-box .sub,.back-link{color:var(--mut);}
+  .back-link:hover,.bottom-link a:hover{color:var(--ac);}
+  .tabs{background:var(--card);border-color:var(--bd);}
+  .tabs .tab-highlight{background:var(--ac);}
+  .tab{color:var(--mut);}.tab.active{color:var(--onac);}
+  .role-toggle{background:var(--card);border:1px solid var(--bd);}
+  .role-toggle .role-highlight{background:var(--ac);box-shadow:none;}
+  .role-opt{color:var(--mut);}.role-opt.active{color:var(--onac);}
+  .field label{color:var(--mut);}
+  .field input,.field select{background-color:rgba(255,255,255,.06);border-color:var(--bd);color:var(--tx);color-scheme:dark;}
+  .field input::placeholder{color:rgba(167,174,208,.6);}
+  .field select option{color:#000;}
+  .field input:focus,.field select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(255,138,91,.2);}
+  .field input:-webkit-autofill{-webkit-text-fill-color:var(--tx);-webkit-box-shadow:0 0 0 100px var(--bg2) inset;}
+  .pw-toggle{color:var(--mut);}.pw-toggle:hover{color:var(--ac);}
+  .field .err{color:var(--bad);}
+  .field.invalid input,.field.invalid select{border-color:var(--bad);}
+  .form-meta label{color:var(--mut);}
+  .form-meta input[type=checkbox]{accent-color:var(--ac);}
+  .form-meta a,.hint a{color:var(--ac);}
+  .btn-brass{background:var(--ac);color:var(--onac);font-weight:700;}
+  .btn-brass:hover{background:var(--ac);box-shadow:0 10px 30px rgba(255,138,91,.4);}
+  .divider,.hint,.bottom-link a{color:var(--mut);}
+  .divider::before,.divider::after{background:var(--bd);}
+  .social-btn{background:var(--card);border-color:var(--bd);color:var(--tx);}
+  .social-btn:hover{background:var(--card);border-color:var(--ac);}
+  .demo-note{background:rgba(255,138,91,.12);color:var(--tx);border-left-color:var(--ac);}
+  .auth-error{background:rgba(255,90,90,.15);border-color:rgba(255,90,90,.3);color:var(--bad);}
+  /* popup */
+  .modal-overlay{background:rgba(8,10,28,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .modal-box{background:var(--bg2);border:1px solid var(--bd);color:var(--tx);box-shadow:0 30px 80px rgba(0,0,0,.5);}
+  .modal-box p{color:var(--mut);}
+  .modal-icon{background:rgba(255,138,91,.15);}.modal-icon svg{stroke:var(--ac);}
+  .modal-icon.err{background:rgba(255,90,90,.15);}.modal-icon.err svg{stroke:var(--bad);}
+  .modal-btn{background:var(--ac);color:var(--onac);font-weight:700;}
+  .modal-btn:hover{background:var(--ac);box-shadow:0 10px 30px rgba(255,138,91,.4);}
+  .modal-btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--bd);box-shadow:none;}
+  .modal-btn.ghost:hover{background:var(--card);border-color:var(--ac);}
+  .modal-bar{background:var(--bd);}.modal-bar i{background:var(--ac);}
+  .modal-btn:focus-visible,.btn:focus-visible,.social-btn:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:3px;}
+</style>
+<style id="cdd-css">
+.cdd{position:relative;display:block;width:100%;min-width:0;flex:1}
+.cdd>select{position:absolute!important;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0!important}
+.cdd-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;font:inherit;color:inherit;background:transparent;border:0;padding:inherit;border-radius:inherit}
+.cdd-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdd-btn svg{flex:none;width:14px;height:14px;transition:transform .2s}
+.cdd.open .cdd-btn svg{transform:rotate(180deg)}
+.cdd-menu{position:fixed;z-index:99999;margin:0;padding:6px;list-style:none;background:#1b2256;color:#f3f4fb;border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.45);overflow-y:auto;overscroll-behavior:contain;max-width:calc(100vw - 16px);font-family:inherit;font-size:1rem}
+.cdd-menu li{padding:11px 14px;border-radius:10px;cursor:pointer}
+.cdd-menu li:hover,.cdd-menu li.sel{background:rgba(255,138,91,.18)}
+.cdd-menu li.sel{color:#ff8a5b;font-weight:600}
+</style><style id="logo70">.logo img,.slogo img,.form-logo img,.auth-visual .logo img,.fb .logo img{height:70px!important;width:auto}@media(max-width:480px){.logo img{height:70px!important}.nav{padding-top:6px;padding-bottom:6px}}</style></head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-visual">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <a href="index.html" class="logo"><img src="./stackly.png" alt="Stackly"></a>
+    <div class="quote">
+      <p>"Every home search has a named agent beside you, from the first viewing to the day you get the keys."</p>
+      <div class="author">— Arvind Rao, Principal Agent</div>
+    </div>
+    <div class="stats">
+      <div><div class="num">1,200+</div><div class="lbl">Homes listed</div></div>
+      <div><div class="num">94%</div><div class="lbl">Buyers matched</div></div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-box">
+
+      <a href="index.html" class="form-logo">
+        <img src="./stackly.png" alt="Stackly">
+        <!-- <span>Stackly Real Estate</span> -->
+      </a>
+
+      <div class="tabs" id="tabsRow">
+        <div class="tab-highlight"></div>
+        <div class="tab active" data-tab="signin">Log in</div>
+        <div class="tab" data-tab="signup">Sign up</div>
+      </div>
+
+      <h1 id="authTitle">Welcome back</h1>
+      <p class="sub" id="authSub">Log in to see your saved homes, enquiries and viewings.</p>
+
+      <div class="auth-error" id="authError"></div>
+
+      <!-- SIGN IN -->
+      <form id="signinForm">
+        <div class="role-toggle" id="roleToggle">
+          <div class="role-highlight"></div>
+          <div class="role-opt active" data-role="user">User login</div>
+          <div class="role-opt" data-role="admin">Admin login</div>
+        </div>
+        <div class="demo-note" id="adminHint" hidden style="margin:-8px 0 22px;">Demo admin: admin@stackly.com / admin123</div>
+        <div class="field" data-field="email">
+          <label for="siEmail">Email</label>
+          <div class="input-wrap">
+            <input type="email" id="siEmail" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="err">Please enter a valid email address.</div>
+        </div>
+        <div class="field" data-field="password">
+          <label for="siPassword">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="siPassword" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="pw-toggle" data-target="siPassword" aria-label="Show password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="err">Password must be at least 6 characters.</div>
+        </div>
+        <div class="form-meta">
+          <label><input type="checkbox" id="remember"> Remember me</label>
+          <a href="#" id="forgotPwLink">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-brass">Log in</button>
+
+        <div class="divider">or continue with</div>
+        <div class="social-row">
+          <button type="button" class="social-btn" data-p="Google">
+            <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5Z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.4C29.6 35.5 27 36.5 24 36.5c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.6 39.6 16.3 44 24 44Z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.4C41.4 36 44 30.5 44 24c0-1.3-.1-2.7-.4-3.5Z"/></svg>
+            Google
+          </button>
+          <button type="button" class="social-btn" data-p="Apple">
+            <svg viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div class="hint">New to Stackly Real Estate? <a href="#" id="switchToSignup">Create an account</a></div>
+      </form>
+
+      <!-- SIGN UP -->
+      <form id="signupForm" style="display:none;">
+        <div class="field" data-field="name">
+          <label for="suName">Full name</label>
+          <div class="input-wrap">
+            <input type="text" id="suName" placeholder="Your name" autocomplete="name">
+          </div>
+          <div class="err">Please enter your name.</div>
+        </div>
+        <div class="field" data-field="interest">
+          <label for="suInterest">I am</label>
+          <div class="input-wrap">
+            <select id="suInterest"><option value="buyer">Looking for a home</option><option value="seller">Selling a property</option></select>
+          </div>
+          <div class="err">Please choose an option.</div>
+        </div>
+        <div class="field" data-field="email">
+          <label for="suEmail">Email</label>
+          <div class="input-wrap">
+            <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="err">Please enter a valid email address.</div>
+        </div>
+        <div class="field" data-field="password">
+          <label for="suPassword">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="suPassword" placeholder="At least 6 characters" autocomplete="new-password">
+            <button type="button" class="pw-toggle" data-target="suPassword" aria-label="Show password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="err">Password must be at least 6 characters.</div>
+        </div>
+        <div class="field" data-field="confirmPassword">
+          <label for="suConfirmPassword">Confirm password</label>
+          <div class="input-wrap">
+            <input type="password" id="suConfirmPassword" placeholder="Re-enter password" autocomplete="new-password">
+            <button type="button" class="pw-toggle" data-target="suConfirmPassword" aria-label="Show password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="err">Passwords do not match.</div>
+        </div>
+        <button type="submit" class="btn btn-brass">Create account</button>
+        <div class="hint" style="margin-top:22px;">Already have an account? <a href="#" id="switchToSignin">Log in</a></div>
+      </form>
+
+      <div class="bottom-link"><a href="index.html">← Back to home</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- Popup modal: login, create account, forgot password, errors -->
+<div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalMsg">
+    <div class="modal-icon" id="modalIcon"></div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalMsg"></p>
+    <div class="field modal-field" id="modalField" hidden>
+      <label for="modalInput">Email</label>
+      <div class="input-wrap"><input type="email" id="modalInput" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="err" id="modalErr">Please enter a valid email address.</div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="modal-btn ghost" id="modalCancelBtn" hidden>Cancel</button>
+      <button type="button" class="modal-btn" id="modalOkBtn">Okay</button>
+    </div>
+    <div class="modal-bar" id="modalBar" hidden><i></i></div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   Storage keys match the rest of the Stackly Real Estate site
+   (sk_users / sk_session), so dashboard.html and admin.html work.
+   --------------------------------------------------------------- */
+const get=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}};
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const norm=e=>String(e||'').trim().toLowerCase();
+if(!get('sk_users'))set('sk_users',[{name:'Admin',email:'admin@stackly.com',pass:'admin123',role:'admin'}]);
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateField(field){
+  const input = field.querySelector('input, select');
+  const name = field.dataset.field;
+  const val = input.value.trim();
+  let valid = true;
+  if(name==='email') valid = emailRe.test(val);
+  else if(name==='password') valid = val.length >= 6;
+  else if(name==='confirmPassword') valid = val.length > 0 && val === document.getElementById('suPassword').value;
+  else valid = val.length > 0;
+  field.classList.toggle('invalid', !valid);
+  return valid;
+}
+function clearAuthError(){ document.getElementById('authError').classList.remove('show'); }
+
+/* ---------------------------------------------------------------
+   Popup modal
+   openModal({type:'ok'|'err'|'mail'|'info', title, msg, ok, cancel,
+              input:{value}, onOk(value), onCancel, auto, lock})
+   onOk may return a string to show as an inline error and keep it open.
+   --------------------------------------------------------------- */
+const $ = id => document.getElementById(id);
+const overlay=$('modalOverlay'), mIcon=$('modalIcon'), mField=$('modalField'), mInput=$('modalInput'), mErr=$('modalErr'), mOk=$('modalOkBtn'), mCancel=$('modalCancelBtn'), mBar=$('modalBar');
+const ICONS={
+  ok:'<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+  err:'<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  info:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+};
+let cur=null, timer=0, lastFocus=null;
+
+function closeModal(){
+  clearTimeout(timer);
+  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
+  cur=null;
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function confirmModal(){
+  if(!cur) return;
+  const o=cur;
+  let v;
+  if(o.input){
+    v=mInput.value.trim();
+  }
+  const r=o.onOk && o.onOk(v);
+  if(r===false){ return; }
+  if(typeof r==='string'){ mErr.textContent=r; mField.classList.add('invalid'); return; }
+  if(cur===o && !o.keep) closeModal();
+}
+function openModal(o){
+  clearTimeout(timer);
+  if(!cur) lastFocus=document.activeElement;
+  cur=o;
+  mIcon.innerHTML=ICONS[o.type]||ICONS.info;
+  mIcon.className='modal-icon'+(o.type==='err'?' err':'');
+  $('modalTitle').textContent=o.title;
+  $('modalMsg').textContent=o.msg;
+  mField.hidden=!o.input; mField.classList.remove('invalid');
+  if(o.input) mInput.value=o.input.value||'';
+  mOk.textContent=o.ok||'Okay';
+  mCancel.hidden=!o.cancel; mCancel.textContent=o.cancel||'';
+  mBar.hidden=!o.auto;
+  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
+  if(o.auto){
+    const i=mBar.firstElementChild; i.style.transition='none'; i.style.width='0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ i.style.transition='width '+o.auto+'ms linear'; i.style.width='100%'; }));
+    timer=setTimeout(confirmModal,o.auto);
+  }
+  setTimeout(()=>(o.input?mInput:mOk).focus(),60);
+}
+mOk.addEventListener('click',confirmModal);
+mCancel.addEventListener('click',()=>{ if(!cur) return; const o=cur; if(o.onCancel) o.onCancel(); if(cur===o) closeModal(); });
+mInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirmModal(); } });
+overlay.addEventListener('click',e=>{ if(e.target===overlay && cur && !cur.lock) closeModal(); });
+addEventListener('keydown',e=>{
+  if(!cur) return;
+  if(e.key==='Escape' && !cur.lock) closeModal();
+  if(e.key==='Tab'){
+    const f=[...overlay.querySelectorAll('button,input')].filter(x=>!x.hidden && !x.closest('[hidden]'));
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+/* ---------- Tabs ---------- */
+const tabsRow=$('tabsRow'), tabs=document.querySelectorAll('.tab'), signinForm=$('signinForm'), signupForm=$('signupForm');
+function goToTab(name){
+  tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  tabsRow.classList.toggle('on-signup', name==='signup');
+  clearAuthError();
+  if(name==='signin'){
+    signinForm.style.display='block'; signupForm.style.display='none';
+    $('authTitle').textContent='Welcome back';
+    $('authSub').textContent='Log in to see your saved homes, enquiries and viewings.';
+    document.title='Log in | Stackly Real Estate';
+  } else {
+    signinForm.style.display='none'; signupForm.style.display='block';
+    $('authTitle').textContent='Create your account';
+    $('authSub').textContent='Save favourite homes, follow every enquiry and get matched with a local agent.';
+    document.title='Sign up | Stackly Real Estate';
+  }
+}
+tabs.forEach(t=>t.addEventListener('click',()=>goToTab(t.dataset.tab)));
+$('switchToSignup').addEventListener('click',e=>{e.preventDefault(); goToTab('signup');});
+$('switchToSignin').addEventListener('click',e=>{e.preventDefault(); goToTab('signin');});
+if(location.hash==='#signup') goToTab('signup');
+
+/* ---------- Role toggle ---------- */
+let selectedRole='user';
+const roleToggle=$('roleToggle'), hint=$('adminHint');
+document.querySelectorAll('.role-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    document.querySelectorAll('.role-opt').forEach(o=>o.classList.remove('active'));
+    opt.classList.add('active');
+    selectedRole=opt.dataset.role;
+    roleToggle.classList.toggle('on-admin', selectedRole==='admin');
+    hint.hidden = selectedRole!=='admin';
+  });
+});
+function setRole(r){ document.querySelector('.role-opt[data-role="'+r+'"]').click(); }
+
+/* ---------- Password show/hide ---------- */
+document.querySelectorAll('.pw-toggle').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const input=$(btn.dataset.target), hidden=input.type==='password';
+    input.type=hidden?'text':'password';
+    btn.setAttribute('aria-label', hidden?'Hide password':'Show password');
+  });
+});
+
+/* ---------- Remember me ---------- */
+const rem=get('sk_remember','');
+if(rem){ $('siEmail').value=rem; $('remember').checked=true; }
+
+/* ---------- Forgot password popup ---------- */
+function forgot(){
+  openModal({
+    type:'mail', title:'Reset your password',
+    msg:'Enter the email linked to your account and we’ll send you a reset link.',
+    input:{ value:$('siEmail').value.trim() },
+    ok:'Send reset link', cancel:'Cancel',
+    onOk:v=>{
+      if(!emailRe.test(v)) return 'Please enter a valid email address.';
+      openModal({ type:'ok', title:'Check your email',
+        msg:'If an account exists for '+v+', a password reset link is on its way. It can take a few minutes to arrive.',
+        ok:'Back to log in' });
+    }
+  });
+}
+$('forgotPwLink').addEventListener('click',e=>{ e.preventDefault(); forgot(); });
+
+/* ---------- Log in popup ---------- */
+let went=0;
+function startSession(u,dest){ if(went) return; went=1; set('sk_session',{name:u.name,email:u.email,role:u.role}); location.href=dest; }
+
+signinForm.addEventListener('submit',e=>{
+  e.preventDefault(); clearAuthError();
+  let valid=true;
+  signinForm.querySelectorAll('.field').forEach(f=>{ if(!validateField(f)) valid=false; });
+  if(!valid) return;
+
+  const em=norm($('siEmail').value), pass=$('siPassword').value, users=get('sk_users',[]);
+  const acct=users.find(x=>norm(x.email)===em);
+
+  if(!acct) return openModal({
+    type:'err', title:'Account not found',
+    msg:'There’s no account for '+em+'. Create one to start saving homes and tracking enquiries.',
+    ok:'Create account', cancel:'Try again',
+    onOk:()=>{ goToTab('signup'); $('suEmail').value=em; $('suName').focus(); }
+  });
+  if(acct.pass!==pass) return openModal({
+    type:'err', title:'Incorrect password',
+    msg:'That password doesn’t match this account. Check it and try again, or reset it.',
+    ok:'Try again', cancel:'Reset password',
+    onOk:()=>{ $('siPassword').value=''; $('siPassword').focus(); },
+    onCancel:forgot
+  });
+  if(selectedRole==='admin' && acct.role!=='admin') return openModal({
+    type:'err', title:'Admin access only',
+    msg:'This account doesn’t have admin rights. Use User login to continue.',
+    ok:'Switch to user login', cancel:'Close', onOk:()=>setRole('user')
+  });
+  if(selectedRole==='user' && acct.role==='admin') return openModal({
+    type:'err', title:'This is an admin account',
+    msg:'Use Admin login to open the admin panel.',
+    ok:'Switch to admin login', cancel:'Close', onOk:()=>setRole('admin')
+  });
+
+  $('remember').checked ? set('sk_remember',em) : localStorage.removeItem('sk_remember');
+  const first=String(acct.name||'').split(' ')[0]||'there', isAdmin=acct.role==='admin';
+  openModal({
+    type:'ok', title:'Login successful',
+    msg:'Welcome back, '+first+'. Opening your '+(isAdmin?'admin panel':'dashboard')+'…',
+    ok:'Continue', auto:1800, lock:true, keep:true,
+    onOk:()=>startSession(acct, isAdmin?'admin.html':'dashboard.html')
+  });
+});
+
+/* ---------- Create account popup ---------- */
+signupForm.addEventListener('submit',e=>{
+  e.preventDefault(); clearAuthError();
+  let valid=true;
+  signupForm.querySelectorAll('.field').forEach(f=>{ if(!validateField(f)) valid=false; });
+  if(!valid) return;
+
+  const name=$('suName').value.trim(), em=norm($('suEmail').value), users=get('sk_users',[]);
+  if(users.some(x=>norm(x.email)===em)) return openModal({
+    type:'err', title:'Email already registered',
+    msg:em+' already has an account. Log in instead, or reset your password if you’ve forgotten it.',
+    ok:'Log in', cancel:'Close',
+    onOk:()=>{ goToTab('signin'); $('siEmail').value=em; $('siPassword').focus(); }
+  });
+
+  const n={ name, email:em, pass:$('suPassword').value, role:'user', interest:$('suInterest').value };
+  users.push(n); set('sk_users',users);
+  openModal({
+    type:'ok', title:'Account created',
+    msg:'Welcome to Stackly Real Estate, '+(name.split(' ')[0]||'there')+'. Please log in to continue.',
+    ok:'Go to log in', lock:true,
+    onOk:()=>{
+      signupForm.reset();
+      goToTab('signin'); setRole('user');
+      $('siEmail').value=em; $('siPassword').value='';
+      $('siPassword').focus();
+    }
+  });
+});
+
+/* ---------- Social buttons ---------- */
+document.querySelectorAll('.social-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{location.href='error.html';});
+});
+
+gsap.from('.auth-box > *',{opacity:0,y:16,duration:.7,stagger:.06});
+gsap.to('.blob-a',{x:-40,y:30,duration:9,repeat:-1,yoyo:true,ease:'sine.inOut'});
+gsap.to('.blob-b',{x:30,y:-20,duration:11,repeat:-1,yoyo:true,ease:'sine.inOut'});
+</script>
+<script id="cdd-js">
+(function(){
+var ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+var menu=null,cur=null;
+function close(){if(menu){menu.remove();menu=null}if(cur){cur.wrap.classList.remove('open');cur=null}}
+function label(s){var o=s.options[s.selectedIndex];return o?o.text:''}
+function place(btn){
+ var r=btn.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,m=8;
+ var w=Math.min(Math.max(r.width,160),vw-2*m);
+ var left=Math.min(Math.max(r.left,m),vw-w-m);
+ menu.style.width=w+'px';menu.style.left=left+'px';menu.style.maxHeight='none';
+ var h=Math.min(menu.scrollHeight+2,vh-2*m);
+ var below=vh-r.bottom-m,above=r.top-m,top;
+ if(h<=below||below>=above){top=r.bottom+6;h=Math.min(h,below-6)}else{h=Math.min(h,above-6);top=r.top-6-h}
+ menu.style.top=Math.max(m,top)+'px';menu.style.maxHeight=Math.max(h,100)+'px';
+}
+function open(s,wrap,btn){
+ close();cur={s:s,wrap:wrap};wrap.classList.add('open');
+ menu=document.createElement('ul');menu.className='cdd-menu';menu.setAttribute('role','listbox');
+ Array.prototype.forEach.call(s.options,function(o,i){
+  var li=document.createElement('li');li.textContent=o.text;li.setAttribute('role','option');
+  if(i===s.selectedIndex)li.className='sel';
+  li.addEventListener('click',function(e){e.stopPropagation();s.selectedIndex=i;btn.firstChild.textContent=o.text;
+   s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}));close()});
+  menu.appendChild(li)});
+ document.body.appendChild(menu);place(btn);
+ var sel=menu.querySelector('.sel');if(sel)sel.scrollIntoView({block:'nearest'});
+}
+function enhance(s){
+ if(s.dataset.cdd||s.multiple||s.size>1)return;s.dataset.cdd='1';
+ var wrap=document.createElement('div');wrap.className='cdd';
+ var cs=getComputedStyle(s);
+ s.parentNode.insertBefore(wrap,s);wrap.appendChild(s);
+ s.tabIndex=-1;
+ var btn=document.createElement('button');btn.type='button';btn.className='cdd-btn';
+ btn.setAttribute('aria-haspopup','listbox');
+ btn.innerHTML='<span>'+label(s).replace(/</g,'&lt;')+'</span>'+ARROW;
+ wrap.insertBefore(btn,s);
+ wrap.style.cssText+=';';
+ btn.style.padding=cs.padding;btn.style.fontSize=cs.fontSize;btn.style.minHeight=cs.height;
+ if(cs.backgroundColor&&cs.backgroundColor!=='rgba(0, 0, 0, 0)'){wrap.style.background=cs.backgroundColor}
+ if(cs.borderTopWidth!=='0px'){wrap.style.border=cs.borderTopWidth+' solid '+cs.borderTopColor}
+ wrap.style.borderRadius=cs.borderRadius;
+ s.style.backgroundImage='none';
+ btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();(cur&&cur.s===s)?close():open(s,wrap,btn)});
+ s.addEventListener('change',function(){btn.firstChild.textContent=label(s)});
+}
+function scan(root){(root||document).querySelectorAll('select').forEach(enhance)}
+document.addEventListener('click',close);
+window.addEventListener('resize',close);
+window.addEventListener('scroll',function(e){if(menu&&!menu.contains(e.target))close()},true);
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+function init(){scan();new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.tagName==='SELECT')enhance(n);else if(n.querySelectorAll)scan(n)}})})}).observe(document.body,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script></body>
+</html>
